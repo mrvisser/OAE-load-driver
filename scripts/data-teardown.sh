@@ -46,7 +46,7 @@ ssh -t -t $EC2_OAE_APP1 'sudo su - sakaioae -c "rm -rf /usr/local/sakaioae/store
 echo ''
 echo ''
 echo '===[Delete all logs]================================================='
-ssh -t -t $EC2_OAE_APP1 "sudo rm /usr/local/sakaioae/gc.log"
+ssh -t -t $EC2_OAE_APP1 "sudo rm /usr/local/sakaioae/gc.log /usr/local/sakaioae/Perf4J*"
 ssh -t -t $EC2_OAE_APP1 "sudo rm -r /var/log/sakaioae/*"
 ssh -t -t $EC2_OAE_SOLR -p 2022 "sudo rm /usr/local/sakaioae/tomcat/gc.log"
 ssh -t -t $EC2_OAE_POSTGRES -p 2022 "sudo rm /var/lib/pgsql/9.1/pgstartup.log"
