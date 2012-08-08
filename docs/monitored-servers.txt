@@ -1,0 +1,1 @@
+ec2-204-236-168-81.us-west-1.compute.amazonaws.com,OAE-SOLR-426995740.us-west-1.elb.amazonaws.com,OAE-Postgres-566174176.us-west-1.elb.amazonaws.com,OAE-Preview-2008250595.us-west-1.elb.amazonaws.com,oae-performance.sakaiproject.org
