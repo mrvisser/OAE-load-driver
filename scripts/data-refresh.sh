@@ -1,5 +1,6 @@
 #!/bin/bash
-lib/env.sh
+
+source lib/env.sh
 
 # Data Setup:
 #
@@ -15,32 +16,32 @@ lib/env.sh
 echo ''
 echo ''
 echo '===[Starting PostgreSQL]================================================='
-ssh -t $EC2_OAE_POSTGRES -p 2022 "sudo /etc/init.d/postgresql-9.1 start"
+ssh -t -t $EC2_OAE_POSTGRES -p 2022 "sudo /etc/init.d/postgresql-9.1 start"
 
 echo ''
 echo ''
 echo '===[Restore PostgreSQL]================================================='
-ssh -t $EC2_OAE_POSTGRES -p 2022 "sudo su - sakaioae -c 'pg_restore -U nakamura -h $EC2_OAE_POSTGRES -w -O -x -d nakamura < ~/.oae/data/oae.tar'"
+ssh -t -t $EC2_OAE_POSTGRES -p 2022 "sudo su - sakaioae -c 'pg_restore -U nakamura -h $EC2_OAE_POSTGRES -w -O -x -d nakamura < ~/.oae/data/oae.tar'"
 
 echo ''
 echo ''
 echo '===[Restore Solr Indexes]================================================='
-ssh -t $EC2_OAE_SOLR -p 2022 "sudo su - sakaioae -c 'cp -R ~/.oae/data/index/* /usr/local/solr/home0/data/index'"
+ssh -t -t $EC2_OAE_SOLR -p 2022 "sudo su - sakaioae -c 'cp -R ~/.oae/data/index/* /usr/local/solr/home0/data/index'"
 
 echo ''
 echo ''
 echo '===[Restore file bodies]================================================='
-ssh -t $EC2_OAE_APP1 'sudo su - sakaioae -c "cp -R ~/.oae/data/store/* /usr/local/sakaioae/store"'
+ssh -t -t $EC2_OAE_APP1 'sudo su - sakaioae -c "cp -R ~/.oae/data/store/* /usr/local/sakaioae/store"'
 
 echo ''
 echo ''
 echo '===[Start Solr]================================================='
-ssh -t $EC2_OAE_SOLR -p 2022 'sudo /etc/init.d/tomcat start'
+ssh -t -t $EC2_OAE_SOLR -p 2022 'sudo /etc/init.d/tomcat start'
 
 echo ''
 echo ''
 echo '===[Start App Server 1]================================================='
-ssh -t $EC2_OAE_APP1 'sudo /etc/init.d/sakaioae start'
+ssh -t -t $EC2_OAE_APP1 'sudo /etc/init.d/sakaioae start'
 
 echo ''
 echo ''
