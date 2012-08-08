@@ -1,11 +1,10 @@
 #! /bin/bash
-#lib/env.sh
+lib/env.sh
 
 # Amount of time to sleep (in seconds) after the Nakamura server startup has begun.
 SLEEP=15
 RUN_ID=`date '+%Y%m%d-%H_%M_%S'`
 RESULTS_DIR="/var/www/html/load_testing_results/$RUN_ID"
-RESULTS_DIR="/home/ec2-user/.tsung/log/$RUN_ID"
 
 if [ "$1" != "auto" ]
 then
@@ -34,8 +33,16 @@ echo 'Starting Tsung test...'
 ssh -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'mkdir -p $RESULTS_DIR/tsung'"
 ssh -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd ~/profiles/nightly; tsung -f tsung.xml -l $RESULTS_DIR/tsung start'"
 
+# The generated tsung output directory is tough to crack. Get it using 'ls'
+TSUNG_OUT=`ssh -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'ls $RESULTS_DIR/tsung'"`
+TSUNG_OUT="$RESULTS_DIR/tsung/$TSUNG_OUT"
+
 echo 'Assembling the results...'
 ssh -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'mkdir -p $RESULTS_DIR/app1/telemetry $RESULTS_DIR/app1/perf4j $RESULTS_DIR/solr0/admin $RESULTS_DIR/db0'"
+
+# Tsung -- just unpack from the unnecessary date-named directory; then run tsung_stats.pl
+ssh -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'mv $TSUNG_OUT/* $RESULTS_DIR/tsung; rmdir $TSUNG_OUT'"
+ssh -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd $RESULTS_DIR/tsung; tsung_stats.pl'"
 
 # App
 ssh -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/usr/local/sakaioae/gc.log $RESULTS_DIR/app1'"
