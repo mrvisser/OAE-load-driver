@@ -34,8 +34,8 @@ echo 'Starting Tsung test...'
 ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'mkdir -p $RESULTS_DIR/tsung'"
 ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd ~/profiles/nightly; tsung -f tsung.xml -l $RESULTS_DIR/tsung start'"
 
-# The generated tsung output directory is tough to crack. Get it using 'ls'
-TSUNG_OUT=`ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'ls $RESULTS_DIR/tsung'"`
+# The generated tsung output directory is tough to crack. Get it using 'ls'. 'sed' is used to trim an annoying \r character at the end of the output.
+TSUNG_OUT=`ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'ls $RESULTS_DIR/tsung'" | sed 's/[^a-zA-Z0-9_-]//g'`
 TSUNG_OUT="$RESULTS_DIR/tsung/$TSUNG_OUT"
 
 echo 'Assembling the results...'
