@@ -61,9 +61,9 @@ ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd $RESULTS_DIR/tsung; tsung_s
 ## App1
 
 # Logs
-ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/usr/local/sakaioae/gc.log $RESULTS_DIR/app1'"
-ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/usr/local/sakaioae/Perf4J* $RESULTS_DIR/app1'"
-ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/var/log/sakaioae/error.log $RESULTS_DIR/app1'"
+ssh -t -t $EC2_OAE_APP1 "cd /usr/local/sakaioae; tar -cf /tmp/logs.tar gc.log Perf4J*; cd /var/log/sakaioae; tar -rf /tmp/logs.tar error.log; gzip -f /tmp/logs.tar"
+ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/tmp/logs.tar.gz $RESULTS_DIR/app1'"
+ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/usr/local/sakaioae/Perf4JGoogleCharts.log $RESULTS_DIR/app1'"
 
 # Telemetry
 ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'wget -O $RESULTS_DIR/app1/telemetry/resmon.css http://$EC2_OAE_APP1:8080/system/resmon/resmon.css'"
