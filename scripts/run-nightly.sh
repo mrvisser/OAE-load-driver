@@ -1,13 +1,30 @@
 #!/bin/bash
 
+
+help() {
+  echo "Usage: $0 (help | <tag>) [auto]"
+  echo ""
+  echo "help: display this usage content."
+  echo "<tag>: The tag with which to describe the performance test run. (required)"
+  echo "auto: If specified, the introductory dialog waiting for user input will not display."
+  echo ""
+}
+
+if [ "$1" = "help" ] || [ -z "$1" ]
+then
+  help
+  exit 1
+fi
+
 source lib/env.sh
 
 # Amount of time to sleep (in seconds) after the Nakamura server startup has begun.
 SLEEP=30
+RUN_TAG=$1
 RUN_ID=`date '+%Y%m%d-%H_%M_%S'`
-RESULTS_DIR="/var/www/html/load_testing_results/$RUN_ID"
+RESULTS_DIR="/var/www/html/load_testing_results/$RUN_TAG-$RUN_ID"
 
-if [ "$1" != "auto" ]
+if [ "$2" != "auto" ]
 then
   echo '********'
   echo '* Running nightly performance test. Steps:'
