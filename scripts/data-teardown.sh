@@ -45,7 +45,8 @@ ssh -t -t $EC2_OAE_APP1 'sudo su - sakaioae -c "rm -rf /usr/local/sakaioae/store
 
 echo ''
 echo ''
-echo '===[Delete all logs]================================================='
+echo '===[Delete all logs and stale configuration]================================================='
+ssh -t -t $EC2_OAE_APP1 "sudo rm -rf /usr/local/sakaioae/sling/config/org/apache/sling/jcr/jackrabbit/server/SlingServerRepository"
 ssh -t -t $EC2_OAE_APP1 "sudo rm -rf /usr/local/sakaioae/sling/startup"
 ssh -t -t $EC2_OAE_APP1 "sudo rm -rf /usr/local/sakaioae/sling/felix"
 ssh -t -t $EC2_OAE_APP1 "sudo rm -f /usr/local/sakaioae/sling/org.apache.sling.launchpad.base.jar*"
