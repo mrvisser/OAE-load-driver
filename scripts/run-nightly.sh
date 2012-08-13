@@ -42,6 +42,10 @@ then
   read KEY
 fi
 
+echo "Updating the Sakai OAE binary..."
+./binary-update.sh
+
+echo "Tearing down data and setting back up..."
 ./data-refresh.sh
 
 echo "Sleeping for $SLEEP seconds..."
