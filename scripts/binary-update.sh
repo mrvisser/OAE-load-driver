@@ -1,7 +1,11 @@
 #!/bin/bash
 
 source lib/env.sh
-source lib/build-info.sh
+
+if [ -z "$REPO_URL" ]
+then
+  source lib/build-info.sh
+fi
 
 # Note that REPO_URL, VERSION, TIMESTAMP, and BUILDNUMBER are all determined in lib/build-info.sh
 

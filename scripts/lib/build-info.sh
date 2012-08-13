@@ -5,11 +5,6 @@ REPO_URL=http://repository-sakai-oae.forge.cloudbees.com/snapshot
 
 if [ -z "$VERSION" ]
 then
-  VERSION=$1
-fi
-
-if [ -z "$VERSION" ]
-then
   VERSION="1.5.0"
 fi
 

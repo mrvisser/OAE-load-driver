@@ -2,7 +2,7 @@
 
 
 help() {
-  echo "Usage: $0 (help | <tag>) [auto]"
+  echo "Usage: $0 (help | nightly | <tag>) [auto]"
   echo ""
   echo "help: display this usage content."
   echo "<tag>: The tag with which to describe the performance test run. (required)"
@@ -27,7 +27,7 @@ RESULTS_DIR="/var/www/html/load_testing_results/$RUN_TAG-$RUN_ID"
 if [ "$2" != "auto" ]
 then
   echo '********'
-  echo '* Running nightly performance test. Steps:'
+  echo '* Running performance test. Steps:'
   echo '* '
   echo '*   1. Run ./data-refresh.sh to clean all data and restore (Will take a while)'
   echo "*   2. Pause for $SLEEP seconds to allow the app server to finish starting up"
@@ -42,8 +42,21 @@ then
   read KEY
 fi
 
-echo "Updating the Sakai OAE binary..."
-./binary-update.sh
+# Seed the results directory
+echo 'Initiating the results directory...'
+ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'mkdir -p $RESULTS_DIR/tsung'"
+
+# If this is the nightly build, automatically pull the latest binary, and store the build info in the results directory
+if [ "$1" = "nightly" ]
+then
+  echo "Updating the Sakai OAE binary..."
+  source lib/build-info.sh
+  ./binary-update.sh
+
+  # Note that the VERSION, TIMESTAMP and BUILDNUMBER variables below are defined in lib/build-info.sh VIA binary-update.sh
+  echo "Writing the build info..."
+  ssh -t -t $EC2_OAE_DRIVER "echo 'Build Info: $VERSION-$TIMESTAMP-$BUILDNUMBER' | sudo tee -a $RESULTS_DIR/build-info.txt"
+fi
 
 echo "Tearing down data and setting back up..."
 ./data-refresh.sh
@@ -52,7 +65,6 @@ echo "Sleeping for $SLEEP seconds..."
 sleep $SLEEP
 
 echo 'Starting Tsung test...'
-ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'mkdir -p $RESULTS_DIR/tsung'"
 ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd ~/profiles/nightly; tsung -f tsung.xml -l $RESULTS_DIR/tsung start'"
 
 # The generated tsung output directory is tough to crack. Get it using 'ls'. 'sed' is used to trim an annoying \r character at the end of the output.
