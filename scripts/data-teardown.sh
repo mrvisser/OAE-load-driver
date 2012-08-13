@@ -45,8 +45,12 @@ ssh -t -t $EC2_OAE_APP1 'sudo su - sakaioae -c "rm -rf /usr/local/sakaioae/store
 
 echo ''
 echo ''
-echo '===[Delete all logs]================================================='
-ssh -t -t $EC2_OAE_APP1 "sudo rm /usr/local/sakaioae/gc.log /usr/local/sakaioae/Perf4J*"
-ssh -t -t $EC2_OAE_APP1 "sudo rm -r /var/log/sakaioae/*"
-ssh -t -t $EC2_OAE_SOLR -p 2022 "sudo rm /usr/local/sakaioae/tomcat/gc.log"
-ssh -t -t $EC2_OAE_POSTGRES -p 2022 "sudo rm /var/lib/pgsql/9.1/pgstartup.log"
+echo '===[Delete all logs and stale configuration]================================================='
+ssh -t -t $EC2_OAE_APP1 "sudo rm -rf /usr/local/sakaioae/sling/config/org/apache/sling/jcr/jackrabbit/server/SlingServerRepository"
+ssh -t -t $EC2_OAE_APP1 "sudo rm -rf /usr/local/sakaioae/sling/startup"
+ssh -t -t $EC2_OAE_APP1 "sudo rm -rf /usr/local/sakaioae/sling/felix"
+ssh -t -t $EC2_OAE_APP1 "sudo rm -f /usr/local/sakaioae/sling/org.apache.sling.launchpad.base.jar*"
+ssh -t -t $EC2_OAE_APP1 "sudo rm -f /usr/local/sakaioae/gc.log /usr/local/sakaioae/Perf4J*"
+ssh -t -t $EC2_OAE_APP1 "sudo rm -rf /var/log/sakaioae/*"
+ssh -t -t $EC2_OAE_SOLR -p 2022 "sudo rm -f /usr/local/sakaioae/tomcat/gc.log"
+ssh -t -t $EC2_OAE_POSTGRES -p 2022 "sudo rm -f /var/lib/pgsql/9.1/pgstartup.log"

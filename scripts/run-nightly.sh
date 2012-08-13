@@ -1,13 +1,30 @@
 #!/bin/bash
 
+
+help() {
+  echo "Usage: $0 (help | <tag>) [auto]"
+  echo ""
+  echo "help: display this usage content."
+  echo "<tag>: The tag with which to describe the performance test run. (required)"
+  echo "auto: If specified, the introductory dialog waiting for user input will not display."
+  echo ""
+}
+
+if [ "$1" = "help" ] || [ -z "$1" ]
+then
+  help
+  exit 1
+fi
+
 source lib/env.sh
 
 # Amount of time to sleep (in seconds) after the Nakamura server startup has begun.
 SLEEP=30
+RUN_TAG=$1
 RUN_ID=`date '+%Y%m%d-%H_%M_%S'`
-RESULTS_DIR="/var/www/html/load_testing_results/$RUN_ID"
+RESULTS_DIR="/var/www/html/load_testing_results/$RUN_TAG-$RUN_ID"
 
-if [ "$1" != "auto" ]
+if [ "$2" != "auto" ]
 then
   echo '********'
   echo '* Running nightly performance test. Steps:'
@@ -61,9 +78,9 @@ ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd $RESULTS_DIR/tsung; tsung_s
 ## App1
 
 # Logs
-ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/usr/local/sakaioae/gc.log $RESULTS_DIR/app1'"
-ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/usr/local/sakaioae/Perf4J* $RESULTS_DIR/app1'"
-ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/var/log/sakaioae/error.log $RESULTS_DIR/app1'"
+ssh -t -t $EC2_OAE_APP1 "cd /usr/local/sakaioae; tar -cf /tmp/logs.tar gc.log Perf4J*; cd /var/log/sakaioae; tar -rf /tmp/logs.tar error.log; gzip -f /tmp/logs.tar"
+ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/tmp/logs.tar.gz $RESULTS_DIR/app1'"
+ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/usr/local/sakaioae/Perf4JGoogleCharts.log $RESULTS_DIR/app1'"
 
 # Telemetry
 ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'wget -O $RESULTS_DIR/app1/telemetry/resmon.css http://$EC2_OAE_APP1:8080/system/resmon/resmon.css'"
