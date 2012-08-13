@@ -22,6 +22,5 @@ echo $BUILDNUMBER
 curl $REPO_URL/org/sakaiproject/nakamura/org.sakaiproject.nakamura.app/$VERSION-SNAPSHOT/org.sakaiproject.nakamura.app-$VERSION-$TIMESTAMP-$BUILDNUMBER.jar > /tmp/latest.jar
 
 scp /tmp/latest.jar $EC2_OAE_APP1:/tmp/latest.jar
-ssh $EC2_OAE_APP1 "sudo su - sakaioae -c 'mv /tmp/latest.jar /usr/local/sakaioae/jars/latest.jar'"
-ssh $EC2_OAE_APP1 "sudo su - sakaioae -c 'rm -f /usr/local/sakaioae/sakaioae.jar; ln -s /usr/local/sakaioae/jars/latest.jar /usr/local/sakaioae/sakaioae.jar'"
-
+ssh -t -t $EC2_OAE_APP1 "sudo mv /tmp/latest.jar /usr/local/sakaioae/jars/latest.jar"
+ssh -t -t $EC2_OAE_APP1 "sudo rm -f /usr/local/sakaioae/sakaioae.jar; sudo ln -s /usr/local/sakaioae/jars/latest.jar /usr/local/sakaioae/sakaioae.jar"
