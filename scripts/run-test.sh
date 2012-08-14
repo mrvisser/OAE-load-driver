@@ -19,7 +19,7 @@ fi
 source lib/env.sh
 
 # Amount of time to sleep (in seconds) after the Nakamura server startup has begun.
-SLEEP=30
+SLEEP=60
 RUN_TAG=$1
 RUN_ID=`date '+%Y%m%d-%H_%M_%S'`
 RESULTS_DIR="/var/www/html/load_testing_results/$RUN_TAG-$RUN_ID"
