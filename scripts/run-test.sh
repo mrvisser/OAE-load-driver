@@ -2,15 +2,16 @@
 
 
 help() {
-  echo "Usage: $0 (help | nightly | <tag>) [auto]"
+  echo "Usage: $0 (help | nightly | <tag>) <profile> [auto]"
   echo ""
   echo "help: display this usage content."
   echo "<tag>: The tag with which to describe the performance test run. (required)"
+  echo "<profile>: The test profile to use (i.e., which tsung test to run in ~/profiles) (required)"
   echo "auto: If specified, the introductory dialog waiting for user input will not display."
   echo ""
 }
 
-if [ "$1" = "help" ] || [ -z "$1" ]
+if [ "$1" = "help" ] || [ -z "$1" ] || [ -z "$2" ]
 then
   help
   exit 1
@@ -21,17 +22,18 @@ source lib/env.sh
 # Amount of time to sleep (in seconds) after the Nakamura server startup has begun.
 SLEEP=60
 RUN_TAG=$1
+PROFILE_TAG=$2
 RUN_ID=`date '+%Y%m%d-%H_%M_%S'`
 RESULTS_DIR="/var/www/html/load_testing_results/$RUN_TAG-$RUN_ID"
 
-if [ "$2" != "auto" ]
+if [ "$3" != "auto" ]
 then
   echo '********'
   echo '* Running performance test. Steps:'
   echo '* '
   echo '*   1. Run ./data-refresh.sh to clean all data and restore (Will take a while)'
   echo "*   2. Pause for $SLEEP seconds to allow the app server to finish starting up"
-  echo '*   3. Remote into driver machine as ec2-user, and execute tsung test at ~/profiles/nightly/tsung.xml'
+  echo "*   3. Remote into driver machine as ec2-user, and execute tsung test at ~/profiles/$PROFILE_TAG/tsung.xml"
   echo '*   4. Package up all logging and profiling information into the output directory'
   echo '* '
   echo '********'
@@ -47,7 +49,7 @@ echo 'Initiating the results directory...'
 ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'mkdir -p $RESULTS_DIR/tsung'"
 
 # If this is the nightly build, automatically pull the latest binary, and store the build info in the results directory
-if [ "$1" = "nightly" ]
+if [ "$RUN_TAG" = "nightly" ]
 then
   echo "Updating the Sakai OAE binary..."
   source lib/build-info.sh
@@ -65,7 +67,7 @@ echo "Sleeping for $SLEEP seconds..."
 sleep $SLEEP
 
 echo 'Starting Tsung test...'
-ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd ~/profiles/nightly; tsung -f tsung.xml -l $RESULTS_DIR/tsung start'"
+ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd ~/profiles/$PROFILE_TAG; tsung -f tsung.xml -l $RESULTS_DIR/tsung start'"
 
 # The generated tsung output directory is tough to crack. Get it using 'ls'. 'sed' is used to trim an annoying \r character at the end of the output.
 TSUNG_OUT=`ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'ls $RESULTS_DIR/tsung'" | sed 's/[^a-zA-Z0-9_-]//g'`
