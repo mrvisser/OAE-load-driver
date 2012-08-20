@@ -96,7 +96,7 @@ ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'cd $RESULTS_DIR/tsung; tsung_s
 ## App1
 
 # Logs
-ssh -t -t $EC2_OAE_APP1 "cd /usr/local/sakaioae; sudo tar -cf /tmp/logs.tar gc.log; sudo tar -rf /tmp/logs.tar Perf4JGoogleCharts.log; sudo tar -rf Perf4JStatistics.csv; cd /var/log/sakaioae; sudo tar -rf /tmp/logs.tar error.log; sudo gzip -f /tmp/logs.tar"
+ssh -t -t $EC2_OAE_APP1 "cd /usr/local/sakaioae; sudo tar -cf /tmp/logs.tar gc.log; sudo tar -rf /tmp/logs.tar Perf4JGoogleCharts.log; sudo tar -rf /tmp/logs.tar Perf4JStatistics.csv; cd /var/log/sakaioae; sudo tar -rf /tmp/logs.tar error.log; sudo gzip -f /tmp/logs.tar"
 ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/tmp/logs.tar.gz $RESULTS_DIR/app1'"
 ssh -t -t $EC2_OAE_DRIVER "sudo su - ec2-user -c 'scp $EC2_OAE_APP1:/usr/local/sakaioae/Perf4JGoogleCharts.log $RESULTS_DIR/app1'"
 
